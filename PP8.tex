@@ -1,0 +1,315 @@
+%==================================================
+%      PREAMBOLO e DICHIARAZIONI INIZIALI
+%==================================================
+\documentclass[10pt,oneside,a4paper]{article}
+
+\usepackage[latin1]{inputenc} 
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{siunitx} %Inserisce automaticamente i dati con le unità  di misura correttamente formattate del SI (utilizzo: \SI{0.82}{m^2}, in generale \SI{misura con il punto decimale}{unità  di misura})
+\sisetup{output-decimal-marker = {.}, separate-uncertainty = true, input-uncertainty-signs = \pm, detect-weight=true, detect-family=true} %per usare SI con il punto decimale
+\usepackage{listings} %Per citare codice informatico formattandolo correttamente
+\usepackage{amsmath,amsthm,verbatim,amssymb,amsfonts,amscd,graphicx,mathtools}
+\usepackage[makeroom]{cancel}
+\newcommand{\abs}[1]{\left\lvert\,#1\,\right\rvert}
+\usepackage{geometry}
+\usepackage{epigraph}
+\usepackage{booktabs}	%tabelle migliorate
+\usepackage{tablefootnote}	%note a piè di pagina in tabella
+\usepackage{threeparttable} %tabella con note a piè di tabella
+\usepackage{caption}	%descrizione per figure
+\usepackage{dblfnote}
+\captionsetup{tableposition=top,figureposition=bottom,font=small} %setup descrizione
+\usepackage{float}
+\usepackage{esvect} %vettori
+\usepackage{longtable} %tabelle lunghe
+\usepackage[dvipsnames]{xcolor}
+\definecolor{sepia}{HTML}{80002A}
+\usepackage[colorlinks=true, citecolor=black, linkcolor=sepia, urlcolor=black]{hyperref}
+\usepackage{mathrsfs}
+\usepackage{circuitikz}
+\tikzset{
+  font={\fontsize{7pt}{12}\selectfont}}
+\ctikzset{bipoles/resistor/height=0.2}
+\ctikzset{bipoles/resistor/width=0.4}
+\ctikzset{bipoles/diode/height=0.3}
+\ctikzset{bipoles/diode/width=0.3}
+\ctikzset{tripoles/american nand port/height=0.7}
+\ctikzset{tripoles/american nand port/width=0.8}
+\usepackage{enumitem} %Liste senza spazi verticali
+\setlist{noitemsep}
+\usepackage{amsmath}
+
+
+\interfootnotelinepenalty=10000
+
+
+\usepackage{multicol}
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+
+\newcommand{\var}{\operatorname{var}}
+\newcommand{\cov}{\operatorname{cov}}
+
+
+\usepackage{listings} %Per inserire codice
+\lstnewenvironment{codice_c}[1][]
+{\lstset{basicstyle=\small\ttfamily, columns=fullflexible,
+keywordstyle=\color{red}\bfseries, commentstyle=\color{blue},
+language=C, basicstyle=\small,
+numbers=left, numberstyle=\tiny,
+stepnumber=2, numbersep=5pt, frame=shadowbox,  showstringspaces=false, #1}}{}
+
+%==================================================
+%                  PRIMA PAGINA
+%==================================================
+
+\title{\textsc{\textbf{Esercitazione 8}: Familiarizzazione con Arduino}}
+\author{\small{G. Galbato Muscio} \and \small{L. Gravina} \and \small{L. Graziotto}}
+\date{11 Dicembre 2018}
+
+\begin{document}
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.5, trim={2.8cm 8.9cm 0 9cm}, clip]{logo.png}
+	\end{figure}
+	\maketitle
+	\begin{center} 
+		\fbox{{\fontsize{12pt}{8mm}\textsc{Gruppo 11}}} \\
+	\end{center}
+\hrule
+\vspace{0.5cm}
+\renewcommand{\abstractname}{Abstract}
+\begin{abstract}
+Si studia il tempo impiegato dal microcontrollore Arduino UNO a svolgere determinate istruzioni, da operazioni aritmetiche, a calcolo di funzioni, a operazioni di Input/Output. Si studia il comportamento dei pin dotati di \emph{pulse width modulation}. Si realizza, mediante la funzione di lettura analogica, un ADC, e se ne calcolano i valori di calibrazione. Si compie infine un campionamento digitale di un segnale analogico periodico. 
+\end{abstract}
+\vspace{4cm}
+\tableofcontents %Indice
+\newpage
+
+
+\pagebreak
+
+
+\begin{multicols}{2}
+%==================================================
+%             COMUNICAZIONE SERIALE
+%==================================================
+\section{Comunicazione seriale}
+Si realizza un programma per Arduino finalizzato a misurare i tempi impiegati per lo svolgimento di alcune istruzioni, e la dipendenza di tali tempi dall'ordine di grandezza dei numeri da manipolare. La funzione \texttt{micros()} permette di registrare i tempi di esecuzione, che vengono riportati in Tabella~\ref{tab:comunicazione}: in questa prima fase, i numeri sono di tipo \texttt{float} con una cifra dopo la virgola, e il tempo di esecuzione è misurato escludendo quello impiegato per la scrittura su schermo del risultato. 
+
+\begin{center}
+\captionof{table}{Misure per la stima dei tempi di esecuzione}
+\label{tab:comunicazione}
+\begin{tabular}{c|c|c|c}
+Operazione & $t_0$ [\SI{}{\micro s}] &  $t_1$ [\SI{}{\micro s}] &  $\Delta t$ [\SI{}{\micro s}] \\
+\hline
+$a + b$ \\
+$a \cdot b$ \\
+$a / b$ \\
+$\sqrt{a}$ \\
+$sin(a)$ \\
+$max\{a,b\}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Per ottenere una stima più precisa, si ripete ogni operazione inserendola all'interno di un ciclo \texttt{for} che la iteri per $N=1000$ volte; quindi si ottiene il tempo medio di esecuzione come $(t_1 - t_0)/N$. Si riportano i risultati in Tabella~\ref{tab:com1000}; anche in questo caso non sono inclusi i tempi necessari alla scrittura a schermo. 
+
+%COMMENTARE
+
+\begin{center}
+\captionof{table}{Misure per la stima dei tempi di esecuzione, con $N=1000$ iterazioni}
+\label{tab:com1000}
+\begin{tabular}{c|c|c|c}
+Operazione & $t_0$ [\SI{}{\micro s}] &  $t_1$ [\SI{}{\micro s}] &  $\Delta t / N$ [\SI{}{\micro s}] \\
+\hline
+$a + b$ \\
+$a \cdot b$ \\
+$a / b$ \\
+$\sqrt{a}$ \\
+$sin(a)$ \\
+$max\{a,b\}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Per l'operazione di moltiplicazione, si studia la dipendenza del tempo di esecuzione dal numero di cifre: con il ciclo \texttt{for} si varia il numero $a$ da moltiplicare per $10$ e si misura volta per volta il tempo di esecuzione. Il grafico che descrive l'andamento di $t$ al variare di $a$ è riportato in Figura~\ref{fig:moltiplicazione}: si osserva che esso risulta essere dipendente solo dal numero di cifre di cui $a$ è composto.
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{Tempo di esecuzione per la moltiplicazione in funzione del numero $a$}
+%	\label{fig:moltiplicazione}
+%	\end{center}
+%\end{Figure}
+
+Per stimare il tempo impiegato a scrivere su schermo si realizza una stringa di caratteri di lunghezza via via maggiore, che viene quindi stampata a video, come da Listato riportato. Si riporta in Figura~\ref{fig:scrittura} il grafico del tempo di esecuzione dell'istruzione di output a video in funzione del numero di caratteri della stringa.
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{Tempo di esecuzione per la scrittura a video in funzione del numero di caratteri}
+%	\label{fig:scrittura}
+%	\end{center}
+%\end{Figure}
+
+%==================================================
+%              ANALOG WRITE
+%==================================================
+\section{\emph{Pulse Width Modulation}}
+Si utilizzano i pin digitali in modalità \emph{pulse width modulation} (PWM), che permette di ottenere un'onda quadra con \emph{duty cycle} variabile scegliendo un valore compreso tra $0$ e $255$. La frequenza è fissata: per il pin \texttt{9} è di \SI{111}{Hz}, mentre per il pin \texttt{6} di \SI{111}{Hz}, misurate entrambe con l'oscilloscopio. 
+
+Si connette innanzitutto al pin dotato di PWM un LED protetto verso massa da una resistenza $R = \SI{111}{\kilo\ohm}$, misurata con il multimetro: si osserva l'aumento di luminosità del LED al crescere del \emph{duty cycle}. Successivamente si connette direttamente il pin \texttt{9} al canale \texttt{CH1} dell'oscilloscopio, e si riportano le istantanee per valori del \emph{duty cycle} del $111\%$ e del $111\%$ rispettivamente nelle Figure~\ref{fig:quadra1} e~\ref{fig:quadra2}. 
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $111\%$}
+%	\label{fig:quadra1}
+%	\end{center}
+%\end{Figure}
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $111\%$}
+%	\label{fig:quadra2}
+%	\end{center}
+%\end{Figure}
+
+Si ripete l'operazione di scrittura analogica con la PWM utilizzando un'onda triangolare, e si riporta in Figura~\ref{fig:triangolare} l'istantanea dell'oscilloscopio, e un'onda sinusoidale, riportando in Figura~\ref{fig:seno} lo screenshot dell'oscilloscopio. I listati sono riportati nel seguito.
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda triangolare: \emph{duty cycle} del $111\%$}
+%	\label{fig:triangolare}
+%	\end{center}
+%\end{Figure}
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda sinusoidale: \emph{duty cycle} del $111\%$}
+%	\label{fig:seno}
+%	\end{center}
+%\end{Figure}
+
+%==================================================
+%             CALIBRAZIONE ADC
+%==================================================
+\section{Calibrazione ADC}
+Si utilizza il pin \texttt{3} di ingresso analogico, al quale è inviata una tensione continua compresa tra $0$ e $5 \SI{}{V}$ mediante il generatore di tensione. Mediante il Listato seguente, si converte il valore analogico della tensione $V_\text{in}$ in un valore digitale $\text{Val}_V$ a $10$ bit (dunque compreso tra $0$ e $2^{10}-1 = 1023$), proporzionale al primo. La tensione in ingresso $V_\text{in}$ è misurata con il multimetro, mentre la tensione corrispondente al valore digitale acquisito da Arduino è
+\[
+V_x = \SI{5.0}{V} \frac{\text{Val}_V}{1023}.
+\]
+Si riportano in Tabella~\ref{tab:calibrazioneADC} le misure per la calibrazione dell'ADC. 
+
+\begin{center}
+\captionof{table}{Misure per la calibrazione dell'ADC}
+\label{tab:calibrazioneADC}
+\begin{tabular}{c|c|c}
+$V_\text{in}$ [\SI{}{V}] & $\text{Val}_V$ &  $V_x$ [\SI{}{V}] \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+
+Nel grafico di Figura~\ref{fig:calibrazioneADC} sono riportati i punti sperimentali e la retta $y = mx+q$ che meglio li interpola, di coefficiente angolare $m = \SI{111}{V^{-1}}$ e intercetta $q = \SI{111}{}$, compatibili con i valori previsti $m^{\text{(atteso)}} = 1023/\SI{5.0}{V}$ e $q^{\text{(atteso)}} = 0$. Il chi quadro è, inoltre, $\chi^2 = 111$, che si confronta con il numero di gradi di libertà ($111$).
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{$\text{Val}_V$ in funzione di $V_\text{in}$}
+%	\label{fig:calibrazioneADC}
+%	\end{center}
+%\end{Figure}
+
+Invertendo la relazione per il coefficiente angolare, si ottiene la costante di calibrazione $k$ dell'ADC, per cui si avrà, nel seguito
+\[
+V_x = \text{Val}_V \cdot k = \text{Val}_V \cdot 111.
+\]
+
+%==================================================
+%             ACQUISIZIONE ADC
+%==================================================
+\section{Acquisizione dati dall'ADC}
+Si esegue un campionamento digitale di un segnale analogico, utilizzando l'ADC studiato nella Sezione precedente. La frequenza del campionamento è variabile fino ad un massimo imposto dalle caratteristiche di Arduino di circa \SI{9}{\kilo \Hz}, dunque si sceglierà una frequenza inferiore, come da Listato seguente.
+
+Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di ampiezza picco-picco \SI{111}{V} e frequenza \SI{111}{\kilo \Hz}; si agisce inoltre sull'offset affinché l'onda abbia tensione sempre positiva. Il codice scritto per Arduino esegue il campionamento e lo salva su file, quindi esso viene analizzato successivamente. Si riporta in Figura~\ref{fig:ADC_sinusoidale} l'acquisizione del segnale sinusoidale, con $V_x$ calcolata a partire dal valore digitale mediante la costante di calibrazione ricavata in precedenza. Si riporta inoltre in Figura~\ref{fig:oscilloscopio_ADC_sinusoidale} un'istantanea dell'oscilloscopio per questa configurazione.
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{}
+%	\label{fig:ADC_sinusoidale}
+%	\end{center}
+%\end{Figure}
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{}
+%	\label{fig:oscilloscopio_ADC_sinusoidale}
+%	\end{center}
+%\end{Figure}
+
+Si ripete il campionamento per un segnale triangolare, e si riportano in Figura~\ref{fig:ADC_triangolare} il grafico di $V_x$ acquisita in funzione del tempo e in Figura~\ref{fig:oscilloscopio_ADC_triangolare} l'istantanea dell'oscilloscopio per questa configurazione.
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{}
+%	\label{fig:ADC_triangolare}
+%	\end{center}
+%\end{Figure}
+
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{}
+%	\captionof{figure}{}
+%	\label{fig:oscilloscopio_ADC_triangolare}
+%	\end{center}
+%\end{Figure}
+
+
+
+
+
+
+\end{multicols}
+%\newpage
+%\section{Appendice}
+
+
+%ESEMPIO DI FIGURA
+%\begin{Figure}
+%	\begin{center}
+%	\includegraphics[width=\linewidth]{comune.png}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per l'amplificatore differenziale, misura di $A_c$}
+%	\label{fig:Ac_differenziale}
+%	\end{center}
+%\end{Figure}
+
+
+%ESEMPIO DI TABELLA
+%\begin{center}
+%\captionof{table}{Misure per la stima di $A_c$}
+%\label{tab:Ac_differenziale}
+%\begin{tabular}{c|c|c|c}
+%$f$ [\SI{}{Hz}] & $V_i$ [\SI{}{V}] & $v_o$ [\SI{}{mV}] & $A_c = v_o / V_i$ \\
+%\hline
+%      149.5 &        3.90 &         11.3 & 2.90e-03 \\
+%      222.0 &        3.90 &         11.5 & 2.95e-03 \\
+%      281.0 &        3.90 &         11.8 & 3.03e-03 \\
+%      359.0 &        3.90 &         11.8 & 3.03e-03 \\
+%      461.0 &        3.90 &         12.2 & 3.13e-03 \\
+%\hline
+%\end{tabular}
+%\end{center}
+
+
+
+\end{document}
