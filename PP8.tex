@@ -54,12 +54,33 @@
 
 
 \usepackage{listings} %Per inserire codice
-\lstnewenvironment{codice_c}[1][]
-{\lstset{basicstyle=\small\ttfamily, columns=fullflexible,
-keywordstyle=\color{red}\bfseries, commentstyle=\color{blue},
-language=C, basicstyle=\small,
-numbers=left, numberstyle=\tiny,
-stepnumber=2, numbersep=5pt, frame=shadowbox,  showstringspaces=false, #1}}{}
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+\definecolor{color1}{RGB}{90,0,0} % Color of the article title and sections
+\definecolor{color2}{RGB}{0,20,50} % Color of the boxes behind the abstract and headings
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
 
 %==================================================
 %                  PRIMA PAGINA
@@ -97,7 +118,36 @@ Si studia il tempo impiegato dal microcontrollore Arduino UNO a svolgere determi
 %             COMUNICAZIONE SERIALE
 %==================================================
 \section{Comunicazione seriale}
-Si realizza un programma per Arduino finalizzato a misurare i tempi impiegati per lo svolgimento di alcune istruzioni, e la dipendenza di tali tempi dall'ordine di grandezza dei numeri da manipolare. La funzione \texttt{micros()} permette di registrare i tempi di esecuzione, che vengono riportati in Tabella~\ref{tab:comunicazione}: in questa prima fase, i numeri sono di tipo \texttt{float} con una cifra dopo la virgola, e il tempo di esecuzione è misurato escludendo quello impiegato per la scrittura su schermo del risultato. 
+Si realizza un programma per Arduino (Listato~\ref{lst:esecuzione}) finalizzato a misurare i tempi impiegati per lo svolgimento di alcune istruzioni, e la dipendenza di tali tempi dall'ordine di grandezza dei numeri da manipolare. La funzione \texttt{micros()} permette di registrare i tempi di esecuzione, che vengono riportati in Tabella~\ref{tab:comunicazione}: in questa prima fase, i numeri sono di tipo \texttt{float} con una cifra dopo la virgola, e il tempo di esecuzione è misurato escludendo quello impiegato per la scrittura su schermo del risultato. 
+
+\begin{lstlisting}[style=CStyle, caption={Codice per la misura dei tempi di esecuzione di operazioni elementari}, label=lst:esecuzione]
+float a, b, c;
+long unsigned t0, t1;
+void setup() {
+	Serial.begin(9600);
+	a = 2.68;
+	b = 11.9;
+}
+
+void loop() {
+	t0 = micros();
+		c = a+b; //somma
+		//c = a*b; //prodotto
+		//c = a/b; //divisione
+		//c = sqrt(a); //radice quadra
+		//c = sin(a); //seno
+		//c = max(a,b); //massimo
+		//c = a*a; //quadrato
+		//c = pow(a,2); //quadrato con funzione pow
+	t1 = micros();
+	Serial.print(t0);
+	Serial.print(" ");
+	Serial.print(t1);
+	Serial.print(" ");
+	Serial.println(t1-t0);
+}
+
+\end{lstlisting}
 
 \begin{center}
 \captionof{table}{Misure per la stima dei tempi di esecuzione}
@@ -105,19 +155,19 @@ Si realizza un programma per Arduino finalizzato a misurare i tempi impiegati pe
 \begin{tabular}{c|c|c|c}
 Operazione & $t_0$ [\SI{}{\micro s}] &  $t_1$ [\SI{}{\micro s}] &  $\Delta t$ [\SI{}{\micro s}] \\
 \hline
-$a + b$ \\
-$a \cdot b$ \\
-$a / b$ \\
-$\sqrt{a}$ \\
-$sin(a)$ \\
-$max\{a,b\}$ \\
+$a + b$ & 312 & 324 & 12 \\
+$a \cdot b$ & 312 & 328 & 16 \\
+$a / b$ & 336 & 372 & 36\\
+$\sqrt{a}$ & 796 & 834 & 38\\
+$sin(a)$ & 500 & 612 & 112\\
+$max\{a,b\}$ & 264 & 272 & 8 \\
+$a^2$ & 1208 & 1220 & 12 \\
+$pow(a,2)$ & 1208 & 1220 & 12 \\
 \hline
 \end{tabular}
 \end{center}
 
-Per ottenere una stima più precisa, si ripete ogni operazione inserendola all'interno di un ciclo \texttt{for} che la iteri per $N=1000$ volte; quindi si ottiene il tempo medio di esecuzione come $(t_1 - t_0)/N$. Si riportano i risultati in Tabella~\ref{tab:com1000}; anche in questo caso non sono inclusi i tempi necessari alla scrittura a schermo. 
-
-%COMMENTARE
+Per ottenere una stima più precisa, si ripete ogni operazione inserendola all'interno di un ciclo \texttt{for} che la iteri per $N=1000$ volte; quindi si ottiene il tempo medio di esecuzione come $(t_1 - t_0)/N$. Si riportano i risultati in Tabella~\ref{tab:com1000}; anche in questo caso non sono inclusi i tempi necessari alla scrittura a schermo. Si osserva che in questo secondo caso i tempi sono maggiori fino al $25\%$ (nel caso della somma), poiché è incluso il tempo di esecuzione del ciclo \texttt{for}.
 
 \begin{center}
 \captionof{table}{Misure per la stima dei tempi di esecuzione, con $N=1000$ iterazioni}
@@ -125,17 +175,41 @@ Per ottenere una stima più precisa, si ripete ogni operazione inserendola all'in
 \begin{tabular}{c|c|c|c}
 Operazione & $t_0$ [\SI{}{\micro s}] &  $t_1$ [\SI{}{\micro s}] &  $\Delta t / N$ [\SI{}{\micro s}] \\
 \hline
-$a + b$ \\
-$a \cdot b$ \\
-$a / b$ \\
-$\sqrt{a}$ \\
-$sin(a)$ \\
-$max\{a,b\}$ \\
+$a + b$ & 17148 & 32956 & 15.8 \\
+$a \cdot b$ & 18908 & 34692 & 17.6 \\
+$a / b$ & 80832 & 119840 & 39.0 \\
+$\sqrt{a}$ & 158988 & 197184 & 38.2 \\
+$sin(a)$ & 235864 & 352236 & 116.4 \\
+$max\{a,b\}$ & 63096 & 71048 & 8.0 \\
+$a^2$ & 18088 & 34852 & 16.8\\
+$pow(a,2)$ & 18088 & 34852 & 16.8\\
 \hline
 \end{tabular}
 \end{center}
 
-Per l'operazione di moltiplicazione, si studia la dipendenza del tempo di esecuzione dal numero di cifre: con il ciclo \texttt{for} si varia il numero $a$ da moltiplicare per $10$ e si misura volta per volta il tempo di esecuzione. Il grafico che descrive l'andamento di $t$ al variare di $a$ è riportato in Figura~\ref{fig:moltiplicazione}: si osserva che esso risulta essere dipendente solo dal numero di cifre di cui $a$ è composto.
+Per l'operazione di moltiplicazione, si studia la dipendenza del tempo di esecuzione dal numero di cifre: con il ciclo \texttt{for} si varia il numero $a$, in questo caso intero, da moltiplicare per $10$, da $0$ a $10^5$ a passi di $1$, e si misura volta per volta il tempo di esecuzione (si veda il Listato~\ref{lst:moltiplicazione}). Si osserva in questo caso che il tempo rimane circa costante.
+
+\begin{lstlisting}[style=CStyle, caption={Codice per la misura dei tempi di esecuzione della moltiplicazione}, label=lst:moltiplicazione]
+#define MAX 10000
+
+int p, q;
+long unsigned t0, t1;
+void setup() {
+	Serial.begin(9600);
+	p=10; 
+}
+void loop() { 
+	Serial.print(p);
+	t0 = micros();
+	q = p*10;
+	t1 = micros();
+	p = p+1;	
+	Serial.print(p);
+	Serial.print(" ");
+	Serial.println(t1-t0); //stampa il tempo in microsecondi
+	while (p > MAX) { }; //il programma si arresta quando il numero supera quello massimo
+}
+\end{lstlisting}
 
 %\begin{Figure}
 %	\begin{center}
@@ -145,7 +219,34 @@ Per l'operazione di moltiplicazione, si studia la dipendenza del tempo di esecuz
 %	\end{center}
 %\end{Figure}
 
-Per stimare il tempo impiegato a scrivere su schermo si realizza una stringa di caratteri di lunghezza via via maggiore, che viene quindi stampata a video, come da Listato riportato. Si riporta in Figura~\ref{fig:scrittura} il grafico del tempo di esecuzione dell'istruzione di output a video in funzione del numero di caratteri della stringa.
+Per stimare il tempo impiegato a scrivere su schermo si realizza una stringa di caratteri di lunghezza via via maggiore, che viene quindi stampata a video, come da Listato~\ref{lst:caratteri}. Si riporta in Figura~\ref{fig:scrittura} il grafico del tempo di esecuzione dell'istruzione di output a video in funzione del numero di caratteri della stringa.
+
+\begin{lstlisting}[style=CStyle, caption={Codice per la misura dei tempi di scrittura a video}, label=lst:caratteri]
+#define LMAX 100 //Lunghezza stringa
+
+int i=0;
+long unsigned t0, t1;
+String string;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+    string += "a";
+    t0 = micros();
+    Serial.print(string);
+    t1 = micros();
+    
+    i = i+1;
+    Serial.print(" ");
+    Serial.print(i);
+    Serial.print(" ");
+    Serial.println(t1-t0);
+    
+    while(i>LMAX) { }
+}
+\end{lstlisting}
 
 %\begin{Figure}
 %	\begin{center}
@@ -158,54 +259,166 @@ Per stimare il tempo impiegato a scrivere su schermo si realizza una stringa di 
 %==================================================
 %              ANALOG WRITE
 %==================================================
-\section{\emph{Pulse Width Modulation}}
-Si utilizzano i pin digitali in modalità \emph{pulse width modulation} (PWM), che permette di ottenere un'onda quadra con \emph{duty cycle} variabile scegliendo un valore compreso tra $0$ e $255$. La frequenza è fissata: per il pin \texttt{9} è di \SI{111}{Hz}, mentre per il pin \texttt{6} di \SI{111}{Hz}, misurate entrambe con l'oscilloscopio. 
+\section{Operazioni di Input Analogico}
+Si utilizzano i pin digitali in modalità \emph{pulse width modulation} (PWM), che permette di ottenere un'onda quadra con \emph{duty cycle} variabile scegliendo un valore compreso tra $0$ e $255$, si veda il Listato~\ref{lst:PWM}. La frequenza è fissata: per il pin \texttt{9} è di \SI{490 \pm 14}{Hz}, mentre per il pin \texttt{6} di \SI{976 \pm 30}{Hz}, misurate entrambe con l'oscilloscopio. 
 
-Si connette innanzitutto al pin dotato di PWM un LED protetto verso massa da una resistenza $R = \SI{111}{\kilo\ohm}$, misurata con il multimetro: si osserva l'aumento di luminosità del LED al crescere del \emph{duty cycle}. Successivamente si connette direttamente il pin \texttt{9} al canale \texttt{CH1} dell'oscilloscopio, e si riportano le istantanee per valori del \emph{duty cycle} del $111\%$ e del $111\%$ rispettivamente nelle Figure~\ref{fig:quadra1} e~\ref{fig:quadra2}. 
+Si connette innanzitutto al pin dotato di PWM un LED protetto verso massa da una resistenza $R = \SI{0.998 \pm 0.005}{\kilo\ohm}$, misurata con il multimetro: si osserva l'aumento di luminosità del LED al crescere del \emph{duty cycle}, poiché il tempo per periodo in cui il livello logico è alto aumenta\footnote{La frequenza è sufficientemente alta da non distinguere tra livello logico alto e basso, ossia non si percepisce la luminosità del LED come oscillante.}. Successivamente si connette direttamente il pin \texttt{9} al canale \texttt{CH1} dell'oscilloscopio, e si riportano le istantanee per valori del \emph{duty cycle} del $20\%$ e del $78\%$ rispettivamente nelle Figure~\ref{fig:quadra1} e~\ref{fig:quadra2}. 
+
+\begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM}, label=lst:PWM]
+int ledPin = 9;
+int val = 128;
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Ready");
+  Serial.println(" ");
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    val=Serial.parseInt();
+  // check value in
+     if (val>=0 && val <=255) {
+      analogWrite(ledPin, val);
+      Serial.print("Scritto valore :");
+      Serial.println(val);
+     }
+     else {
+      Serial.println("Valore fuori range (0:255)!!!");
+     }
+  }
+}
+\end{lstlisting}
 
 %\begin{Figure}
 %	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $111\%$}
+%	\includegraphics[width=\linewidth]{quadra1.png}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $20\%$}
 %	\label{fig:quadra1}
 %	\end{center}
 %\end{Figure}
 
 %\begin{Figure}
 %	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $111\%$}
+%	\includegraphics[width=\linewidth]{quadra2.png}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $78\%$}
 %	\label{fig:quadra2}
 %	\end{center}
 %\end{Figure}
 
-Si ripete l'operazione di scrittura analogica con la PWM utilizzando un'onda triangolare, e si riporta in Figura~\ref{fig:triangolare} l'istantanea dell'oscilloscopio, e un'onda sinusoidale, riportando in Figura~\ref{fig:seno} lo screenshot dell'oscilloscopio. I listati sono riportati nel seguito.
+Si ripete l'operazione di scrittura analogica con la PWM utilizzando un'onda triangolare per modulare la durata del \emph{duty cycle}, come da Listato~\ref{lst:triangolare}; per ottenere un'onda triangolare visibile sull'oscilloscopio a partire da quella triangolare di modulazione PWM, si realizza un filtro RC integratore. Si sceglie
+\begin{itemize}
+\item[--] $R = \SI{0.328 \pm 0.002}{\kilo\ohm}$;
+\item[--] $C = \SI{83.7 \pm 0.4}{\micro\farad}$,
+\end{itemize}
+misurati con multimetro e ponte, in modo da avere una bassa frequenza di taglio, molto inferiore alla frequenza dell'onda modulata (che è di \SI{200}{Hz}):
+\[
+f_T = \frac{1}{RC} = \SI{36.4 \pm 0.4}{\Hz}.
+\] 
+Si riporta in Figura~\ref{fig:PWM_filtro_triangolare} lo screenshot dell'oscilloscopio per il segnale in uscita.
+
+\begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM, modulazione triangolare}, label=lst:triangolare]
+int ledPin = 9;
+int val,i;
+int millisecondi = 5;
+
+void setup() {
+  i = val = 0;
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Ready");
+}
+
+void loop() {
+  for(i=0;i<255;i++){
+    val = i;
+    analogWrite(ledPin,val);
+    delay(millisecondi);    
+  }
+    for(i=0;i<255;i++){
+    val = 255-i;
+    analogWrite(ledPin,val);
+    delay(millisecondi); 
+  }
+}
+\end{lstlisting}
 
 %\begin{Figure}
 %	\begin{center}
 %	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda triangolare: \emph{duty cycle} del $111\%$}
-%	\label{fig:triangolare}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda triangolare}
+%	\label{fig:PWM_filtro_triangolare}
 %	\end{center}
 %\end{Figure}
+
+Si ripete la stessa identica procedura per un segnale modulato con una PWM sinusoidale. Il programma è riportato nel Listato~\ref{lst:sinusoidale}, e l'istantanea dell'oscilloscopio per questa configurazione in Figura~\ref{fig:PWM_filtro_sinusoidale}.
+
+\begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM, modulazione triangolare}, label=lst:sinusoidale]
+int ledPin = 9;
+int val;
+float x;
+float dx = 0.01;
+int millisecondi = 1;
+
+void setup() {
+  val = 0;
+  x=0.;
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+  Serial.println("Ready");
+}
+
+void loop() {
+  val = (int)(127.5*sin(x)+127.5);
+  Serial.println(val);
+  analogWrite(ledPin,(int)(val));
+  x += dx;
+  delay(millisecondi);
+}
+\end{lstlisting}
 
 %\begin{Figure}
 %	\begin{center}
 %	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda sinusoidale: \emph{duty cycle} del $111\%$}
-%	\label{fig:seno}
+%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda sinusoidale}
+%	\label{fig:PWM_filtro_sinusoidale}
 %	\end{center}
 %\end{Figure}
+
+
+
 
 %==================================================
 %             CALIBRAZIONE ADC
 %==================================================
 \section{Calibrazione ADC}
-Si utilizza il pin \texttt{3} di ingresso analogico, al quale è inviata una tensione continua compresa tra $0$ e $5 \SI{}{V}$ mediante il generatore di tensione. Mediante il Listato seguente, si converte il valore analogico della tensione $V_\text{in}$ in un valore digitale $\text{Val}_V$ a $10$ bit (dunque compreso tra $0$ e $2^{10}-1 = 1023$), proporzionale al primo. La tensione in ingresso $V_\text{in}$ è misurata con il multimetro, mentre la tensione corrispondente al valore digitale acquisito da Arduino è
+Si utilizza il pin \texttt{A3} di ingresso analogico, al quale è inviata una tensione continua compresa tra $0$ e $5 \SI{}{V}$ mediante il generatore di tensione. Mediante il Listato seguente, si converte il valore analogico della tensione $V_\text{in}$ in un valore digitale $\text{Val}_V$ a $10$ bit (dunque compreso tra $0$ e $2^{10}-1 = 1023$), proporzionale al primo. La tensione in ingresso $V_\text{in}$ è misurata con il multimetro; nel caso ideale la tensione corrispondente al valore digitale acquisito da Arduino dovrebbe essere
 \[
-V_x = \SI{5.0}{V} \frac{\text{Val}_V}{1023}.
+V_x = \frac{\text{Val}_V}{1023} \cdot V_\text{ref},
 \]
-Si riportano in Tabella~\ref{tab:calibrazioneADC} le misure per la calibrazione dell'ADC. 
+dove $V_\text{ref} = \SI{5.0}{V}$ è la tensione di riferimento qui impostata. Si confronterà successivamente l'aderenza dei dati sperimentali a questa formula.
+Si riportano in Tabella~\ref{tab:calibrazioneADC} le misure per la calibrazione dell'ADC. Il programma scritto è riportato nel Listato~\ref{lst:calibrazioneADC}. 
+
+\begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM}, label=lst:calibrazioneADC]
+int analogPin = 3;
+int RdVal = 0;
+float Vx = 0.0;
+void setup() {
+  analogReference(DEFAULT); // 5 V
+  Serial.begin(9600);
+  Serial.println("Arduino Voltage meter");
+  Serial.println(" ");
+}
+
+void loop() {
+  RdVal = analogRead(analogPin);
+  Vx = float(5.0)*(float(RdVal)/float(1023));
+  delay(2000);
+  // Serial.print(RdVal);
+  Serial.print(" Tensione letta: ");
+  Serial.println(Vx);
+}
+\end{lstlisting}
 
 \begin{center}
 \captionof{table}{Misure per la calibrazione dell'ADC}
@@ -236,9 +449,9 @@ V_x = \text{Val}_V \cdot k = \text{Val}_V \cdot 111.
 %             ACQUISIZIONE ADC
 %==================================================
 \section{Acquisizione dati dall'ADC}
-Si esegue un campionamento digitale di un segnale analogico, utilizzando l'ADC studiato nella Sezione precedente. La frequenza del campionamento è variabile fino ad un massimo imposto dalle caratteristiche di Arduino di circa \SI{9}{\kilo \Hz}, dunque si sceglierà una frequenza inferiore, come da Listato seguente.
+Si esegue un campionamento digitale di un segnale analogico, utilizzando l'ADC studiato nella sezione precedente. La frequenza del campionamento è variabile fino ad un massimo imposto dalle caratteristiche di Arduino di circa \SI{9}{\kilo \Hz}, dunque si sceglierà una frequenza inferiore, come da Listato seguente.
 
-Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di ampiezza picco-picco \SI{111}{V} e frequenza \SI{111}{\kilo \Hz}; si agisce inoltre sull'offset affinché l'onda abbia tensione sempre positiva. Il codice scritto per Arduino esegue il campionamento e lo salva su file, quindi esso viene analizzato successivamente. Si riporta in Figura~\ref{fig:ADC_sinusoidale} l'acquisizione del segnale sinusoidale, con $V_x$ calcolata a partire dal valore digitale mediante la costante di calibrazione ricavata in precedenza. Si riporta inoltre in Figura~\ref{fig:oscilloscopio_ADC_sinusoidale} un'istantanea dell'oscilloscopio per questa configurazione.
+Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di ampiezza picco-picco \SI{111}{V} e frequenza \SI{111}{\kilo \Hz}; si agisce inoltre sull'offset affinché l'onda abbia tensione sempre positiva. Il codice scritto per Arduino esegue il campionamento salvando i punti in un buffer, che viene scritto su schermo solo in un secondo momento\footnote{Questo è fatto per non far incidere il tempo di trasmissione seriale sulla velocità di campionamento. In ogni caso, si ha cura di non acquisire troppi punti data la memoria limitata di Arduino. Per campionamenti più numerosi, si potrebbe usare una scrittura volta per volta aumentando la velocità di trasmissione oltre i \SI{9600}{Baud}.}; quindi esso viene analizzato. Si riporta in Figura~\ref{fig:ADC_sinusoidale} l'acquisizione del segnale sinusoidale, con $V_x$ calcolata a partire dal valore digitale mediante la costante di calibrazione ricavata in precedenza. Si riporta inoltre in Figura~\ref{fig:oscilloscopio_ADC_sinusoidale} un'istantanea dell'oscilloscopio per questa configurazione.
 
 %\begin{Figure}
 %	\begin{center}
