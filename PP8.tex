@@ -347,7 +347,7 @@ void loop() {
 
 \begin{Figure}
 	\begin{center}
-	\includegraphics[width=0.9\linewidth]{triangolare.png}
+	\includegraphics[width=0.9\linewidth]{triangolare2.png}
 	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda triangolare}
 	\label{fig:PWM_filtro_triangolare}
 	\end{center}
@@ -355,7 +355,7 @@ void loop() {
 
 Si ripete la stessa identica procedura per un segnale modulato con una PWM sinusoidale. Il programma è riportato nel Listato~\ref{lst:sinusoidale}, e l'istantanea dell'oscilloscopio per questa configurazione in Figura~\ref{fig:PWM_filtro_sinusoidale}.
 
-\begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM, modulazione triangolare}, label=lst:sinusoidale]
+\begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM, modulazione sinusoidale}, label=lst:sinusoidale]
 int ledPin = 9;
 int val;
 float x;
@@ -381,7 +381,7 @@ void loop() {
 
 \begin{Figure}
 	\begin{center}
-	\includegraphics[width=0.9\linewidth]{sinusoide.png}
+	\includegraphics[width=0.9\linewidth]{sinusoide2.png}
 	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda sinusoidale}
 	\label{fig:PWM_filtro_sinusoidale}
 	\end{center}
@@ -465,7 +465,44 @@ V_x = \text{Val}_V \cdot k = \text{Val}_V \cdot \SI{4.878 \pm 0.002 e-3}{V}.
 \section{Acquisizione dati dall'ADC}
 Si esegue un campionamento digitale di un segnale analogico, utilizzando l'ADC studiato nella sezione precedente. La frequenza del campionamento è variabile fino ad un massimo imposto dalle caratteristiche di Arduino di circa \SI{9}{\kilo \Hz}, dunque si sceglierà una frequenza inferiore, come da Listato seguente.
 
-Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di ampiezza picco-picco \SI{111}{V} e frequenza \SI{111}{\kilo \Hz}; si agisce inoltre sull'offset affinché l'onda abbia tensione sempre positiva. Il codice scritto per Arduino esegue il campionamento salvando i punti in un buffer, che viene scritto su schermo solo in un secondo momento\footnote{Questo è fatto per non far incidere il tempo di trasmissione seriale sulla velocità di campionamento. In ogni caso, si ha cura di non acquisire troppi punti data la memoria limitata di Arduino. Per campionamenti più numerosi, si potrebbe usare una scrittura volta per volta aumentando la velocità di trasmissione oltre i \SI{9600}{Baud}.}; quindi esso viene analizzato. Si riporta in Figura~\ref{fig:ADC_sinusoidale} l'acquisizione del segnale sinusoidale, con $V_x$ calcolata a partire dal valore digitale mediante la costante di calibrazione ricavata in precedenza. Si riporta inoltre in Figura~\ref{fig:oscilloscopio_ADC_sinusoidale} un'istantanea dell'oscilloscopio per questa configurazione.
+Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di ampiezza picco-picco \SI{4.24 \pm 0.01}{V} e frequenza \SI{69 \pm 2}{\Hz}; si agisce inoltre sull'offset affinché l'onda abbia tensione sempre positiva. Il codice scritto per Arduino, riportato nel Listato~\ref{lst:acquisizioneADC}, esegue il campionamento salvando i punti in un buffer, che viene scritto su schermo solo in un secondo momento\footnote{Questo è fatto per non far incidere il tempo di trasmissione seriale sulla velocità di campionamento. In ogni caso, si ha cura di non acquisire troppi punti data la memoria limitata di Arduino. Per campionamenti più numerosi, si potrebbe usare una scrittura volta per volta aumentando la velocità di trasmissione oltre i \SI{9600}{Baud}.}; quindi esso viene analizzato. Si riporta in Figura~\ref{fig:ADC_sinusoidale} l'acquisizione del segnale sinusoidale, con $V_x$ calcolata a partire dal valore digitale mediante la costante di calibrazione ricavata in precedenza. Si riporta inoltre in Figura~\ref{fig:oscilloscopio_ADC_sinusoidale} un'istantanea dell'oscilloscopio per questa configurazione.
+
+\begin{lstlisting}[style=CStyle, caption={Codice per l'acquisizione dall'ADC}, label=lst:acquisizioneADC]
+int data[100];
+int analogPin = 3;
+int NSamples = 100;
+float FullScale=5.;
+float f = 80;
+int T = int (1000000./(float)(f*NSamples));
+int i = 0;
+long unsigned t0,t1,t;
+
+void setup() {
+Serial.begin(9600);
+}
+void loop() {
+  t0 = micros();
+  for (i=0;i<NSamples;i++){
+    t = micros();
+    data[i] = analogRead(analogPin);
+    delayMicroseconds(T);
+  }
+  t1 = micros();
+  for(i=0;i<NSamples;i++){
+    Serial.print(i);
+    Serial.print(" ");
+    Serial.print(t);
+    Serial.print(" ");
+    Serial.print(data[i]);
+    Serial.print(" ");
+    //Serial.print(" V = ");
+    float temp = float (data[i])/1023*FullScale;
+    Serial.println(temp);
+  }
+  delay(1000);
+  while(1){ }
+}
+\end{lstlisting}
 
 %\begin{Figure}
 %	\begin{center}
@@ -483,7 +520,7 @@ Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di 
 %	\end{center}
 %\end{Figure}
 
-Si ripete il campionamento per un segnale triangolare, e si riportano in Figura~\ref{fig:ADC_triangolare} il grafico di $V_x$ acquisita in funzione del tempo e in Figura~\ref{fig:oscilloscopio_ADC_triangolare} l'istantanea dell'oscilloscopio per questa configurazione.
+Si ripete il campionamento per un segnale triangolare, di ampiezza picco-picco \SI{4.16 \pm 0.12}{V} e frequenza \SI{68 \pm 2}{\Hz}, e si riportano in Figura~\ref{fig:ADC_triangolare} il grafico di $V_x$ acquisita in funzione del tempo e in Figura~\ref{fig:oscilloscopio_ADC_triangolare} l'istantanea dell'oscilloscopio per questa configurazione.
 
 %\begin{Figure}
 %	\begin{center}
