@@ -1,12 +1,13 @@
+%!TEX encoding = UTF-8 Unicode
 %==================================================
 %      PREAMBOLO e DICHIARAZIONI INIZIALI
 %==================================================
 \documentclass[10pt,oneside,a4paper]{article}
 
-\usepackage[latin1]{inputenc} 
+\usepackage[utf8]{inputenc} 
 \usepackage[italian]{babel}
 \usepackage[T1]{fontenc}
-\usepackage{siunitx} %Inserisce automaticamente i dati con le unit‡  di misura correttamente formattate del SI (utilizzo: \SI{0.82}{m^2}, in generale \SI{misura con il punto decimale}{unit‡  di misura})
+\usepackage{siunitx} %Inserisce automaticamente i dati con le unit√†  di misura correttamente formattate del SI (utilizzo: \SI{0.82}{m^2}, in generale \SI{misura con il punto decimale}{unit√†  di misura})
 \sisetup{output-decimal-marker = {.}, separate-uncertainty = true, input-uncertainty-signs = \pm, detect-weight=true, detect-family=true} %per usare SI con il punto decimale
 \usepackage{listings} %Per citare codice informatico formattandolo correttamente
 \usepackage{amsmath,amsthm,verbatim,amssymb,amsfonts,amscd,graphicx,mathtools}
@@ -15,8 +16,8 @@
 \usepackage{geometry}
 \usepackage{epigraph}
 \usepackage{booktabs}	%tabelle migliorate
-\usepackage{tablefootnote}	%note a piË di pagina in tabella
-\usepackage{threeparttable} %tabella con note a piË di tabella
+\usepackage{tablefootnote}	%note a pi√® di pagina in tabella
+\usepackage{threeparttable} %tabella con note a pi√® di tabella
 \usepackage{caption}	%descrizione per figure
 \usepackage{dblfnote}
 \captionsetup{tableposition=top,figureposition=bottom,font=small} %setup descrizione
@@ -103,7 +104,7 @@
 \vspace{0.5cm}
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
-Si studia il tempo impiegato dal microcontrollore Arduino UNO a svolgere determinate istruzioni, da operazioni aritmetiche, a calcolo di funzioni, a operazioni di Input/Output. Si studia il comportamento dei pin dotati di \emph{pulse width modulation}. Si realizza, mediante la funzione di lettura analogica, un ADC, e se ne calcolano i valori di calibrazione. Si compie infine un campionamento digitale di un segnale analogico periodico. 
+Si studia il tempo impiegato dal microcontrollore Arduino UNO a svolgere determinate istruzioni, da operazioni aritmetiche, a calcolo di funzioni, a operazioni di Input/Output. Si studia il comportamento dei pin dotati di \emph{pulse width modulation}. Si realizza, mediante la funzione di lettura analogica, un ADC, e se ne calcolano i valori di calibrazione. Si compie infine un campionamento digitale di un segnale analogico periodico.
 \end{abstract}
 \vspace{4cm}
 \tableofcontents %Indice
@@ -118,7 +119,7 @@ Si studia il tempo impiegato dal microcontrollore Arduino UNO a svolgere determi
 %             COMUNICAZIONE SERIALE
 %==================================================
 \section{Comunicazione seriale}
-Si realizza un programma per Arduino (Listato~\ref{lst:esecuzione}) finalizzato a misurare i tempi impiegati per lo svolgimento di alcune istruzioni, e la dipendenza di tali tempi dall'ordine di grandezza dei numeri da manipolare. La funzione \texttt{micros()} permette di registrare i tempi di esecuzione, che vengono riportati in Tabella~\ref{tab:comunicazione}: in questa prima fase, i numeri sono di tipo \texttt{float} con una cifra dopo la virgola, e il tempo di esecuzione Ë misurato escludendo quello impiegato per la scrittura su schermo del risultato. 
+Si realizza un programma per Arduino (Listato~\ref{lst:esecuzione}) finalizzato a misurare i tempi impiegati per lo svolgimento di alcune istruzioni, e la dipendenza di tali tempi dall'ordine di grandezza dei numeri da manipolare. La funzione \texttt{micros()} permette di registrare i tempi di esecuzione, che vengono riportati in Tabella~\ref{tab:comunicazione}: in questa prima fase, i numeri sono di tipo \texttt{float} con una cifra dopo la virgola, e il tempo di esecuzione √® misurato escludendo quello impiegato per la scrittura su schermo del risultato. 
 
 \begin{lstlisting}[style=CStyle, caption={Codice per la misura dei tempi di esecuzione di operazioni elementari}, label=lst:esecuzione]
 float a, b, c;
@@ -167,7 +168,7 @@ $pow(a,2)$ & 1208 & 1220 & 12 \\
 \end{tabular}
 \end{center}
 
-Per ottenere una stima pi˘ precisa, si ripete ogni operazione inserendola all'interno di un ciclo \texttt{for} che la iteri per $N=1000$ volte; quindi si ottiene il tempo medio di esecuzione come $(t_1 - t_0)/N$. Si riportano i risultati in Tabella~\ref{tab:com1000}; anche in questo caso non sono inclusi i tempi necessari alla scrittura a schermo. Si osserva che in questo secondo caso i tempi sono maggiori fino al $25\%$ (nel caso della somma), poichÈ Ë incluso il tempo di esecuzione del ciclo \texttt{for}.
+Per ottenere una stima pi√π precisa, si ripete ogni operazione inserendola all'interno di un ciclo $\texttt{for}$ che la iteri per $N=1000$ volte; quindi si ottiene il tempo medio di esecuzione come $(t_1 - t_0)/N$. Si riportano i risultati in Tabella~\ref{tab:com1000}; anche in questo caso non sono inclusi i tempi necessari alla scrittura a schermo. Si osserva che in questo secondo caso i tempi sono maggiori fino al $25\%$ (nel caso della somma), poich√© √® incluso il tempo di esecuzione del ciclo $\texttt{for}$.
 
 \begin{center}
 \captionof{table}{Misure per la stima dei tempi di esecuzione, con $N=1000$ iterazioni}
@@ -250,21 +251,23 @@ void loop() {
 }
 \end{lstlisting}
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{Tempo di esecuzione per la scrittura a video in funzione del numero di caratteri}
-%	\label{fig:scrittura}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=\linewidth]{stringa.pdf}
+	\captionof{figure}{Tempo di esecuzione per la scrittura a video in funzione del numero di caratteri, la scala sull'asse $y$ si intende moltiplicata per $10^5$}
+	\label{fig:scrittura}
+	\end{center}
+\end{Figure}
+
+Interpolando linearmente si ottiene un coefficiente angolare pari a $m = \SI{1053}{\micro\s}$, che ha il significato di tempo necessario per trasmettere un singolo carattere: considerando una velocit√† di trasmissione pari a \SI{9600}{baud}, tale tempo √® coerente con l'aspettativa teorica pari a $t^\text{teo} = \frac{8}{9600} = \SI{833}{\micro\s}$, ottenuto considerando che un char √® composto da $8$ bit e che, a questa velocit√†, viene trasmesso un bit ogni $1/9600$ secondi.
 
 %==================================================
 %              ANALOG WRITE
 %==================================================
 \section{Operazioni di Input Analogico}
-Si utilizzano i pin digitali in modalit‡ \emph{pulse width modulation} (PWM), che permette di ottenere un'onda quadra con \emph{duty cycle} variabile scegliendo un valore compreso tra $0$ e $255$, si veda il Listato~\ref{lst:PWM}. La frequenza Ë fissata: per il pin \texttt{9} Ë di \SI{490 \pm 14}{Hz}, mentre per il pin \texttt{6} di \SI{976 \pm 30}{Hz}, misurate entrambe con l'oscilloscopio. 
+Si utilizzano i pin digitali in modalit√† \emph{pulse width modulation} (PWM), che permette di ottenere un'onda quadra con \emph{duty cycle} variabile scegliendo un valore compreso tra $0$ e $255$, si veda il Listato~\ref{lst:PWM}. La frequenza √® fissata: per il pin \texttt{9} √® di \SI{490 \pm 14}{Hz}, mentre per il pin \texttt{6} di \SI{976 \pm 30}{Hz}, misurate entrambe con l'oscilloscopio. 
 
-Si connette innanzitutto al pin dotato di PWM un LED protetto verso massa da una resistenza $R = \SI{0.998 \pm 0.005}{\kilo\ohm}$, misurata con il multimetro: si osserva l'aumento di luminosit‡ del LED al crescere del \emph{duty cycle}, poichÈ il tempo per periodo in cui il livello logico Ë alto aumenta\footnote{La frequenza Ë sufficientemente alta da non distinguere tra livello logico alto e basso, ossia non si percepisce la luminosit‡ del LED come oscillante.}. Successivamente si connette direttamente il pin \texttt{9} al canale \texttt{CH1} dell'oscilloscopio, e si riportano le istantanee per valori del \emph{duty cycle} del $20\%$ e del $78\%$ rispettivamente nelle Figure~\ref{fig:quadra1} e~\ref{fig:quadra2}. 
+Si connette innanzitutto al pin dotato di PWM un LED protetto verso massa da una resistenza $R = \SI{0.998 \pm 0.005}{\kilo\ohm}$, misurata con il multimetro: si osserva l'aumento di luminosit√† del LED al crescere del \emph{duty cycle}, poich√© il tempo per periodo in cui il livello logico √® alto aumenta\footnote{La frequenza √® sufficientemente alta da non distinguere tra livello logico alto e basso, ossia non si percepisce la luminosit√† del LED come oscillante.}. Successivamente si connette direttamente il pin \texttt{9} al canale \texttt{CH1} dell'oscilloscopio, e si riportano le istantanee per valori del \emph{duty cycle} del $20\%$ e del $78\%$ rispettivamente nelle Figure~\ref{fig:quadra1} e~\ref{fig:quadra2}. 
 
 \begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM}, label=lst:PWM]
 int ledPin = 9;
@@ -313,7 +316,7 @@ Si ripete l'operazione di scrittura analogica con la PWM utilizzando un'onda tri
 \item[--] $R = \SI{0.328 \pm 0.002}{\kilo\ohm}$;
 \item[--] $C = \SI{83.7 \pm 0.4}{\micro\farad}$,
 \end{itemize}
-misurati con multimetro e ponte, in modo da avere una bassa frequenza di taglio, molto inferiore alla frequenza dell'onda modulata (che Ë di \SI{200}{Hz}):
+misurati con multimetro e ponte, in modo da avere una bassa frequenza di taglio, molto inferiore alla frequenza dell'onda modulata (che √® di \SI{200}{Hz}):
 \[
 f_T = \frac{1}{RC} = \SI{36.4 \pm 0.4}{\Hz}.
 \] 
@@ -353,7 +356,7 @@ void loop() {
 	\end{center}
 \end{Figure}
 
-Si ripete la stessa identica procedura per un segnale modulato con una PWM sinusoidale. Il programma Ë riportato nel Listato~\ref{lst:sinusoidale}, e l'istantanea dell'oscilloscopio per questa configurazione in Figura~\ref{fig:PWM_filtro_sinusoidale}.
+Si ripete la stessa identica procedura per un segnale modulato con una PWM sinusoidale. Il programma √® riportato nel Listato~\ref{lst:sinusoidale}, e l'istantanea dell'oscilloscopio per questa configurazione in Figura~\ref{fig:PWM_filtro_sinusoidale}.
 
 \begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM, modulazione sinusoidale}, label=lst:sinusoidale]
 int ledPin = 9;
@@ -387,19 +390,19 @@ void loop() {
 	\end{center}
 \end{Figure}
 
-In entrambi gli screenshot Ë riportata in alto l'uscita del pin \texttt{9} di Arduino, che rappresenta l'onda quadra \emph{pulse width modulated}: si notano gli addensamenti e le rarefazioni di linee in corrispondenza dei massimi e dei minimi delle funzioni triangolare e sinusoidale.
+In entrambi gli screenshot √® riportata in alto l'uscita del pin \texttt{9} di Arduino, che rappresenta l'onda quadra \emph{pulse width modulated}: si notano gli addensamenti e le rarefazioni di linee in corrispondenza dei massimi e dei minimi delle funzioni triangolare e sinusoidale.
 
 
 %==================================================
 %             CALIBRAZIONE ADC
 %==================================================
 \section{Calibrazione ADC}
-Si utilizza il pin \texttt{A3} di ingresso analogico, al quale Ë inviata una tensione continua compresa tra $0$ e $5 \SI{}{V}$ mediante il generatore di tensione. Mediante il Listato~\ref{lst:calibrazioneADC}, si converte il valore analogico della tensione $V_\text{in}$ in un valore digitale $\text{Val}_V$ a $10$ bit (dunque compreso tra $0$ e $2^{10}-1 = 1023$), proporzionale al primo. La tensione in ingresso $V_\text{in}$ Ë misurata con il multimetro; nel caso ideale la tensione corrispondente al valore digitale acquisito da Arduino dovrebbe essere
+Si utilizza il pin \texttt{A3} di ingresso analogico, al quale √® inviata una tensione continua compresa tra $0$ e $5 \SI{}{V}$ mediante il generatore di tensione. Mediante il Listato~\ref{lst:calibrazioneADC}, si converte il valore analogico della tensione $V_\text{in}$ in un valore digitale $\text{Val}_V$ a $10$ bit (dunque compreso tra $0$ e $2^{10}-1 = 1023$), proporzionale al primo. La tensione in ingresso $V_\text{in}$ √® misurata con il multimetro; nel caso ideale la tensione corrispondente al valore digitale acquisito da Arduino dovrebbe essere
 \[
 V_x = \frac{\text{Val}_V}{1023} \cdot V_\text{ref},
 \]
-dove $V_\text{ref} = \SI{5.0}{V}$ Ë la tensione di riferimento qui impostata. Si confronter‡ successivamente l'aderenza dei dati sperimentali a questa formula.
-Si riportano in Tabella~\ref{tab:calibrazioneADC} le misure per la calibrazione dell'ADC. Il programma scritto Ë riportato nel Listato~\ref{lst:calibrazioneADC}. 
+dove $V_\text{ref} = \SI{5.0}{V}$ √® la tensione di riferimento qui impostata. Si confronter√† successivamente l'aderenza dei dati sperimentali a questa formula.
+Si riportano in Tabella~\ref{tab:calibrazioneADC} le misure per la calibrazione dell'ADC. Il programma scritto √® riportato nel Listato~\ref{lst:calibrazioneADC}. 
 
 \begin{lstlisting}[style=CStyle, caption={Codice per la conversione analogico-digitale}, label=lst:calibrazioneADC]
 int analogPin = 3;
@@ -444,7 +447,7 @@ $(\pm 0.5\%)$&&\\
 \end{tabular}
 \end{center}
 
-Nel grafico di Figura~\ref{fig:calibrazioneADC} sono riportati i punti sperimentali e la retta $y = mx+q$ che meglio li interpola, di coefficiente angolare $m = \SI{205.0 \pm 0.1}{V^{-1}}$ e intercetta $q = \SI{-2.0 \pm 0.3}{}$; li si confronta con i valori previsti $m^{\text{(atteso)}} = 1023/\SI{5.0}{V} = \SI{204.6}{V^{-1}}$ e $q^{\text{(atteso)}} = 0$. Il chi quadro Ë, inoltre, $\chi^2 = 2.4$, che si confronta con il numero di gradi di libert‡ ($9$), da cui si ipotizza che le incertezze sul valore di $\text{Val}_V$, supposte di 1 bit, siano sottostimate.
+Nel grafico di Figura~\ref{fig:calibrazioneADC} sono riportati i punti sperimentali e la retta $y = mx+q$ che meglio li interpola, di coefficiente angolare $m = \SI{205.0 \pm 0.1}{V^{-1}}$ e intercetta $q = \SI{-2.0 \pm 0.3}{}$; li si confronta con i valori previsti $m^{\text{(atteso)}} = 1023/\SI{5.0}{V} = \SI{204.6}{V^{-1}}$ e $q^{\text{(atteso)}} = 0$. Il chi quadro √®, inoltre, $\chi^2 = 2.4$, che si confronta con il numero di gradi di libert√† ($9$), da cui si ipotizza che le incertezze sul valore di $\text{Val}_V$, supposte di 1 bit, siano sottostimate.
 
 \begin{Figure}
 	\begin{center}
@@ -454,7 +457,7 @@ Nel grafico di Figura~\ref{fig:calibrazioneADC} sono riportati i punti speriment
 	\end{center}
 \end{Figure}
 
-Invertendo la relazione per il coefficiente angolare, si ottiene la costante di calibrazione $k$ dell'ADC, per cui si avr‡, nel seguito
+Invertendo la relazione per il coefficiente angolare, si ottiene la costante di calibrazione $k$ dell'ADC, per cui si avr√†, nel seguito
 \[
 V_x = \text{Val}_V \cdot k = \text{Val}_V \cdot \SI{4.878 \pm 0.002 e-3}{V}.
 \]
@@ -463,27 +466,29 @@ V_x = \text{Val}_V \cdot k = \text{Val}_V \cdot \SI{4.878 \pm 0.002 e-3}{V}.
 %             ACQUISIZIONE ADC
 %==================================================
 \section{Acquisizione dati dall'ADC}
-Si esegue un campionamento digitale di un segnale analogico, utilizzando l'ADC studiato nella sezione precedente. La frequenza del campionamento Ë variabile fino ad un massimo imposto dalle caratteristiche di Arduino di circa \SI{9}{\kilo \Hz}, dunque si sceglier‡ una frequenza inferiore, come da Listato seguente.
+Si esegue un campionamento digitale di un segnale analogico, utilizzando l'ADC studiato nella sezione precedente. La frequenza del campionamento √® variabile fino ad un massimo imposto dalle caratteristiche di Arduino di circa \SI{9}{\kilo \Hz}, dunque si sceglier√† una frequenza inferiore, come da Listato seguente.
 
-Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di ampiezza picco-picco \SI{4.24 \pm 0.01}{V} e frequenza \SI{69 \pm 2}{\Hz}; si agisce inoltre sull'offset affinchÈ l'onda abbia tensione sempre positiva. Il codice scritto per Arduino, riportato nel Listato~\ref{lst:acquisizioneADC}, esegue il campionamento salvando i punti in un buffer, che viene scritto su schermo solo in un secondo momento\footnote{Questo Ë fatto per non far incidere il tempo di trasmissione seriale sulla velocit‡ di campionamento. In ogni caso, si ha cura di non acquisire troppi punti data la memoria limitata di Arduino. Per campionamenti pi˘ numerosi, si potrebbe usare una scrittura volta per volta aumentando la velocit‡ di trasmissione oltre i \SI{9600}{Baud}.}; quindi esso viene analizzato. Si riporta in Figura~\ref{fig:ADC_sinusoidale} l'acquisizione del segnale sinusoidale, con $V_x$ calcolata a partire dal valore digitale mediante la costante di calibrazione ricavata in precedenza. Si riporta inoltre in Figura~\ref{fig:oscilloscopio_ADC_sinusoidale} un'istantanea dell'oscilloscopio per questa configurazione.
+Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di ampiezza picco-picco \SI{4.24 \pm 0.01}{V} e frequenza \SI{69 \pm 2}{\Hz}; si agisce inoltre sull'offset affinch√© l'onda abbia tensione sempre positiva. Il codice scritto per Arduino, riportato nel Listato~\ref{lst:acquisizioneADC}, esegue il campionamento salvando i punti in un buffer, che viene scritto su schermo solo in un secondo momento\footnote{Questo √® fatto per non far incidere il tempo di trasmissione seriale sulla velocit√† di campionamento. In ogni caso, si ha cura di non acquisire troppi punti data la memoria limitata di Arduino. Per campionamenti pi√π numerosi, si potrebbe usare una scrittura volta per volta aumentando la velocit√† di trasmissione oltre i \SI{9600}{Baud}.}; quindi esso viene analizzato. Si riporta in Figura~\ref{fig:ADC_sinusoidale} l'acquisizione del segnale sinusoidale, con $V_x$ calcolata a partire dal valore digitale mediante la costante di calibrazione ricavata in precedenza, sovrapposta al segnale misurato dall'oscilloscopio\footnote{Avendo cura di traslare l'asse dei tempi e di far concordare le unit√† di misura}. Si riporta inoltre in Figura~\ref{fig:oscilloscopio_ADC_sinusoidale} un'istantanea dell'oscilloscopio per questa configurazione.
 
 \begin{lstlisting}[style=CStyle, caption={Codice per l'acquisizione dall'ADC}, label=lst:acquisizioneADC]
+#define CALIBRATION 0.004878 //Valore di calibrazione per l'ADC
+#define OFFSET 105 //Tempo in millisecondi per le operazioni di lettura contenute nel ciclo for del loop
+
 int data[100];
 int analogPin = 3;
 int NSamples = 100;
-float FullScale=5.;
 float f = 80;
-int T = int (1000000./(float)(f*NSamples));
+int T = int (1000000./(float)(f*NSamples))-OFFSET;
 int i = 0;
-long unsigned t0,t1,t;
+long unsigned t0,t1;
 
 void setup() {
 Serial.begin(9600);
 }
+
 void loop() {
   t0 = micros();
   for (i=0;i<NSamples;i++){
-    t = micros();
     data[i] = analogRead(analogPin);
     delayMicroseconds(T);
   }
@@ -496,49 +501,51 @@ void loop() {
     Serial.print(data[i]);
     Serial.print(" ");
     //Serial.print(" V = ");
-    float temp = float (data[i])/1023*FullScale;
-    Serial.println(temp);
+    float temp = float (data[i])*CALIBRATION;
+    Serial.print(temp);
+    Serial.print(" ");
+    Serial.print(float(t1-t0)/NSamples);
   }
   delay(1000);
   while(1){ }
 }
 \end{lstlisting}
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{}
-%	\label{fig:ADC_sinusoidale}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=\linewidth]{sinSovrapposta.pdf}
+	\captionof{figure}{Onda sinusoidale misurata con Arduino sovrapposta alla misura di un oscilloscopio}
+	\label{fig:ADC_sinusoidale}
+	\end{center}
+\end{Figure}
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{}
-%	\label{fig:oscilloscopio_ADC_sinusoidale}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=\linewidth]{ingressoArduinoADCSin}
+	\captionof{figure}{Istantanea dell'oscilloscopio per l'onda sinusoidale inviata all'Arduino}
+	\label{fig:oscilloscopio_ADC_sinusoidale}
+	\end{center}
+\end{Figure}
 
-Si ripete il campionamento per un segnale triangolare, di ampiezza picco-picco \SI{4.16 \pm 0.12}{V} e frequenza \SI{68 \pm 2}{\Hz}, e si riportano in Figura~\ref{fig:ADC_triangolare} il grafico di $V_x$ acquisita in funzione del tempo e in Figura~\ref{fig:oscilloscopio_ADC_triangolare} l'istantanea dell'oscilloscopio per questa configurazione.
+Si ripete il campionamento per un segnale triangolare, di ampiezza picco-picco \SI{4.16 \pm 0.12}{V} e frequenza \SI{68 \pm 2}{\Hz}, e si riportano in Figura~\ref{fig:ADC_triangolare} il grafico di $V_x$ acquisita in funzione del tempo sovrapposto al segnale dell'oscilloscopio e in Figura~\ref{fig:oscilloscopio_ADC_triangolare} l'istantanea dell'oscilloscopio per questa configurazione.
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{}
-%	\label{fig:ADC_triangolare}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=\linewidth]{triangolareSovrapposta}
+	\captionof{figure}{Onda triangolare misurata con Arduino sovrapposta alla misura di un oscilloscopio}
+	\label{fig:ADC_triangolare}
+	\end{center}
+\end{Figure}
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{}
-%	\label{fig:oscilloscopio_ADC_triangolare}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=\linewidth]{triangADC}
+	\captionof{figure}{stantanea dell'oscilloscopio per l'onda sinusoidale inviata all'Arduino}
+	\label{fig:oscilloscopio_ADC_triangolare}
+	\end{center}
+\end{Figure}
 
-
+Si osserva un buon accordo tra le misure fatte con la scheda Arduino e quelle fatte con l'oscilloscopio.
 
 
 
