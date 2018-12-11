@@ -316,7 +316,7 @@ Si ripete l'operazione di scrittura analogica con la PWM utilizzando un'onda tri
 \item[--] $R = \SI{0.328 \pm 0.002}{\kilo\ohm}$;
 \item[--] $C = \SI{83.7 \pm 0.4}{\micro\farad}$,
 \end{itemize}
-misurati con multimetro e ponte, in modo da avere una bassa frequenza di taglio, molto inferiore alla frequenza dell'onda modulata (che è di \SI{200}{Hz}):
+misurati con multimetro e ponte, in modo da avere una bassa frequenza di taglio, molto inferiore alla frequenza dell'onda modulata (che è di \SI{200}{Hz}\footnote{Nel codice il periodo dell'onda è rappresentato dalla variabile \emph{millisecondi}.}):
 \[
 f_T = \frac{1}{RC} = \SI{36.4 \pm 0.4}{\Hz}.
 \] 
@@ -466,7 +466,7 @@ V_x = \text{Val}_V \cdot k = \text{Val}_V \cdot \SI{4.878 \pm 0.002 e-3}{V}.
 %             ACQUISIZIONE ADC
 %==================================================
 \section{Acquisizione dati dall'ADC}
-Si esegue un campionamento digitale di un segnale analogico, utilizzando l'ADC studiato nella sezione precedente. La frequenza del campionamento è variabile fino ad un massimo imposto dalle caratteristiche di Arduino di circa \SI{9}{\kilo \Hz}, dunque si sceglierà una frequenza inferiore, come da Listato seguente.
+Si esegue un campionamento digitale di un segnale analogico, utilizzando l'ADC studiato nella sezione precedente. La frequenza del campionamento è variabile fino ad un massimo imposto dalle caratteristiche di Arduino di circa \SI{9}{\kilo \Hz}, dunque si sceglierà una frequenza inferiore, come da listato seguente.
 
 Si invia pertanto, mediante il generatore di segnali, un segnale sinusoidale di ampiezza picco-picco \SI{4.24 \pm 0.01}{V} e frequenza \SI{69 \pm 2}{\Hz}; si agisce inoltre sull'offset affinché l'onda abbia tensione sempre positiva. Il codice scritto per Arduino, riportato nel Listato~\ref{lst:acquisizioneADC}, esegue il campionamento salvando i punti in un buffer, che viene scritto su schermo solo in un secondo momento\footnote{Questo è fatto per non far incidere il tempo di trasmissione seriale sulla velocità di campionamento. In ogni caso, si ha cura di non acquisire troppi punti data la memoria limitata di Arduino. Per campionamenti più numerosi, si potrebbe usare una scrittura volta per volta aumentando la velocità di trasmissione oltre i \SI{9600}{Baud}.}; quindi esso viene analizzato. Si riporta in Figura~\ref{fig:ADC_sinusoidale} l'acquisizione del segnale sinusoidale, con $V_x$ calcolata a partire dal valore digitale mediante la costante di calibrazione ricavata in precedenza, sovrapposta al segnale misurato dall'oscilloscopio\footnote{Avendo cura di traslare l'asse dei tempi e di far concordare le unità di misura}. Si riporta inoltre in Figura~\ref{fig:oscilloscopio_ADC_sinusoidale} un'istantanea dell'oscilloscopio per questa configurazione.
 
@@ -540,7 +540,7 @@ Si ripete il campionamento per un segnale triangolare, di ampiezza picco-picco \
 \begin{Figure}
 	\begin{center}
 	\includegraphics[width=\linewidth]{triangADC}
-	\captionof{figure}{stantanea dell'oscilloscopio per l'onda sinusoidale inviata all'Arduino}
+	\captionof{figure}{Istantanea dell'oscilloscopio per l'onda sinusoidale inviata all'Arduino}
 	\label{fig:oscilloscopio_ADC_triangolare}
 	\end{center}
 \end{Figure}
