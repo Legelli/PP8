@@ -194,10 +194,12 @@ Per l'operazione di moltiplicazione, si studia la dipendenza del tempo di esecuz
 
 int p, q;
 long unsigned t0, t1;
+
 void setup() {
 	Serial.begin(9600);
 	p=10; 
 }
+
 void loop() { 
 	Serial.print(p);
 	t0 = micros();
@@ -206,9 +208,9 @@ void loop() {
 	p = p+1;	
 	Serial.print(p);
 	Serial.print(" ");
-	Serial.println(t1-t0); //stampa il tempo in microsecondi
-	while (p > MAX) { }; //il programma si arresta quando il numero supera quello massimo
-}
+	Serial.println(t1-t0); //stampa il tempo
+	while (p > MAX) { }; //il programma si arresta quando il numero supera MAX
+	}
 \end{lstlisting}
 
 %\begin{Figure}
@@ -290,21 +292,21 @@ void loop() {
 }
 \end{lstlisting}
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{quadra1.png}
-%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $20\%$}
-%	\label{fig:quadra1}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=0.9\linewidth]{quadra1.png}
+	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $20\%$}
+	\label{fig:quadra1}
+	\end{center}
+\end{Figure}
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{quadra2.png}
-%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $78\%$}
-%	\label{fig:quadra2}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=0.9\linewidth]{quadra2.png}
+	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM: \emph{duty cycle} del $78\%$}
+	\label{fig:quadra2}
+	\end{center}
+\end{Figure}
 
 Si ripete l'operazione di scrittura analogica con la PWM utilizzando un'onda triangolare per modulare la durata del \emph{duty cycle}, come da Listato~\ref{lst:triangolare}; per ottenere un'onda triangolare visibile sull'oscilloscopio a partire da quella triangolare di modulazione PWM, si realizza un filtro RC integratore. Si sceglie
 \begin{itemize}
@@ -343,13 +345,13 @@ void loop() {
 }
 \end{lstlisting}
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda triangolare}
-%	\label{fig:PWM_filtro_triangolare}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=0.9\linewidth]{triangolare.png}
+	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda triangolare}
+	\label{fig:PWM_filtro_triangolare}
+	\end{center}
+\end{Figure}
 
 Si ripete la stessa identica procedura per un segnale modulato con una PWM sinusoidale. Il programma è riportato nel Listato~\ref{lst:sinusoidale}, e l'istantanea dell'oscilloscopio per questa configurazione in Figura~\ref{fig:PWM_filtro_sinusoidale}.
 
@@ -377,29 +379,29 @@ void loop() {
 }
 \end{lstlisting}
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda sinusoidale}
-%	\label{fig:PWM_filtro_sinusoidale}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=0.9\linewidth]{sinusoide.png}
+	\captionof{figure}{Istantanea dell'oscilloscopio per il pin \texttt{9} in PWM, onda sinusoidale}
+	\label{fig:PWM_filtro_sinusoidale}
+	\end{center}
+\end{Figure}
 
-
+In entrambi gli screenshot è riportata in alto l'uscita del pin \texttt{9} di Arduino, che rappresenta l'onda quadra \emph{pulse width modulated}: si notano gli addensamenti e le rarefazioni di linee in corrispondenza dei massimi e dei minimi delle funzioni triangolare e sinusoidale.
 
 
 %==================================================
 %             CALIBRAZIONE ADC
 %==================================================
 \section{Calibrazione ADC}
-Si utilizza il pin \texttt{A3} di ingresso analogico, al quale è inviata una tensione continua compresa tra $0$ e $5 \SI{}{V}$ mediante il generatore di tensione. Mediante il Listato seguente, si converte il valore analogico della tensione $V_\text{in}$ in un valore digitale $\text{Val}_V$ a $10$ bit (dunque compreso tra $0$ e $2^{10}-1 = 1023$), proporzionale al primo. La tensione in ingresso $V_\text{in}$ è misurata con il multimetro; nel caso ideale la tensione corrispondente al valore digitale acquisito da Arduino dovrebbe essere
+Si utilizza il pin \texttt{A3} di ingresso analogico, al quale è inviata una tensione continua compresa tra $0$ e $5 \SI{}{V}$ mediante il generatore di tensione. Mediante il Listato~\ref{lst:calibrazioneADC}, si converte il valore analogico della tensione $V_\text{in}$ in un valore digitale $\text{Val}_V$ a $10$ bit (dunque compreso tra $0$ e $2^{10}-1 = 1023$), proporzionale al primo. La tensione in ingresso $V_\text{in}$ è misurata con il multimetro; nel caso ideale la tensione corrispondente al valore digitale acquisito da Arduino dovrebbe essere
 \[
 V_x = \frac{\text{Val}_V}{1023} \cdot V_\text{ref},
 \]
 dove $V_\text{ref} = \SI{5.0}{V}$ è la tensione di riferimento qui impostata. Si confronterà successivamente l'aderenza dei dati sperimentali a questa formula.
 Si riportano in Tabella~\ref{tab:calibrazioneADC} le misure per la calibrazione dell'ADC. Il programma scritto è riportato nel Listato~\ref{lst:calibrazioneADC}. 
 
-\begin{lstlisting}[style=CStyle, caption={Codice per la scrittura PWM}, label=lst:calibrazioneADC]
+\begin{lstlisting}[style=CStyle, caption={Codice per la conversione analogico-digitale}, label=lst:calibrazioneADC]
 int analogPin = 3;
 int RdVal = 0;
 float Vx = 0.0;
@@ -425,24 +427,36 @@ void loop() {
 \label{tab:calibrazioneADC}
 \begin{tabular}{c|c|c}
 $V_\text{in}$ [\SI{}{V}] & $\text{Val}_V$ &  $V_x$ [\SI{}{V}] \\
+$(\pm 0.5\%)$&&\\
 \hline
+5.00 & 1022 & 5.00 \\
+4.50 & 921 & 4.50 \\
+4.00 & 818 & 4.00 \\
+3.50 & 716 & 3.50 \\
+3.01 & 615 & 3.00 \\
+2.50 & 511 & 2.50 \\
+2.00 & 408 & 1.99 \\
+1.50 & 306 & 1.50 \\ 
+1.00 & 203 & 0.99 \\
+0.500 & 100 & 0.49 \\
+0.0410 & 6 & 0.03 \\
 \hline
 \end{tabular}
 \end{center}
 
-Nel grafico di Figura~\ref{fig:calibrazioneADC} sono riportati i punti sperimentali e la retta $y = mx+q$ che meglio li interpola, di coefficiente angolare $m = \SI{111}{V^{-1}}$ e intercetta $q = \SI{111}{}$, compatibili con i valori previsti $m^{\text{(atteso)}} = 1023/\SI{5.0}{V}$ e $q^{\text{(atteso)}} = 0$. Il chi quadro è, inoltre, $\chi^2 = 111$, che si confronta con il numero di gradi di libertà ($111$).
+Nel grafico di Figura~\ref{fig:calibrazioneADC} sono riportati i punti sperimentali e la retta $y = mx+q$ che meglio li interpola, di coefficiente angolare $m = \SI{205.0 \pm 0.1}{V^{-1}}$ e intercetta $q = \SI{-2.0 \pm 0.3}{}$; li si confronta con i valori previsti $m^{\text{(atteso)}} = 1023/\SI{5.0}{V} = \SI{204.6}{V^{-1}}$ e $q^{\text{(atteso)}} = 0$. Il chi quadro è, inoltre, $\chi^2 = 2.4$, che si confronta con il numero di gradi di libertà ($9$), da cui si ipotizza che le incertezze sul valore di $\text{Val}_V$, supposte di 1 bit, siano sottostimate.
 
-%\begin{Figure}
-%	\begin{center}
-%	\includegraphics[width=\linewidth]{}
-%	\captionof{figure}{$\text{Val}_V$ in funzione di $V_\text{in}$}
-%	\label{fig:calibrazioneADC}
-%	\end{center}
-%\end{Figure}
+\begin{Figure}
+	\begin{center}
+	\includegraphics[width=\linewidth]{calibrazioneADC.png}
+	\captionof{figure}{$\text{Val}_V$ in funzione di $V_\text{in}$}
+	\label{fig:calibrazioneADC}
+	\end{center}
+\end{Figure}
 
 Invertendo la relazione per il coefficiente angolare, si ottiene la costante di calibrazione $k$ dell'ADC, per cui si avrà, nel seguito
 \[
-V_x = \text{Val}_V \cdot k = \text{Val}_V \cdot 111.
+V_x = \text{Val}_V \cdot k = \text{Val}_V \cdot \SI{4.878 \pm 0.002 e-3}{V}.
 \]
 
 %==================================================
